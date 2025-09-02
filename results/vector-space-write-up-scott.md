@@ -35,9 +35,9 @@ We would have a writer mode with the following changes.
 1. We could take over the embeding step and feed the model sequences of vectors.
 2. We could take the raw hidden vector from just before choosing a next token.
 3. We would proceed to generating the next-token probability distribution, and create a next vector as a probability-weighted sum of the embeddings of the next tokens. (This is an average, but it doesn't feel like an average. I may just need time to let it sink in.) And this would be the next vector
-4. If we hit the limit on the number of vectors produced, trigger a call to the reader to translate the pending 
+4. If we hit the limit on the number of vectors produced, trigger a call to the reader to translate the pending vectors and then replace them in our (vector) context with the embeddings.
 
-And then to implement a reader mode with the following changes. vectors and then replace them in our (vector) context with the embeddings.
+And then to implement a reader mode with the following changes. 
 1. As above, we could take over the embeding step and feed the model sequences of vectors.
 2. It _would_ be forced to pick a next token at each step as usual, no raw vectors.
 We would then send a query to the writer model, collect the output as a sequence of vectors, and then call the reader model with a message like Embedded("Please translate the following into English: ") + (Sequence of Vectors).
@@ -52,3 +52,19 @@ We switched to Qwen2.5-1.5B and attempted to go back to instruction mode. We cou
 Words did come out! Though not always in English and not in meaningful responses. However, things became clearer when looking at the nearest tokens to the generated vectors. It became apparent that they did not correspond to a single answer, just in a generalized language. They were superpositions of truly different potential responses. For instance, "The capital of France is" -> ("Paris", "located", "a") which you could imagine being completed as "The capital of France is Paris", "The capital of France is located on a river.", and "The capital of France is a popular vacation destination.".
 
 This does lend weight to the ideas in "Training Large Language Models to Reason in a Continuous Latent Space" in which this can be used to explore multiple approaches in CoT at once. 
+
+## Existing Research
+
+### Training Large Language Models to Reason in a Continuous Latent Space
+https://arxiv.org/abs/2412.06769
+
+### Continuous Chain of Thought Enables Parallel Exploration and Reasoning
+https://arxiv.org/abs/2505.23648
+
+### Soft Thinking: Unlocking the Reasoning Potential of LLMs in Continuous Concept Space
+https://arxiv.org/abs/2505.15778v1
+
+## Conclusion
+
+Knowing what I do now, this could have been seen by _just_ adding some logging of the distribution of next tokens before generating them but otherwise letting the model run as normal.
+
