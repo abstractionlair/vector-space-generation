@@ -1,0 +1,81 @@
+(venv) (base) scottmcguire@MacBook-Pro src % python qwen_concept_tokens.py 
+
+============================================================
+QWEN2.5-1.5B CONCEPT TOKEN GENERATION TEST
+============================================================
+Using device: mps
+Available RAM: 5.5 GB
+Loading Qwen/Qwen2.5-1.5B-Instruct...
+Model loaded successfully
+Embedding matrix shape: torch.Size([151936, 1536])
+Vocabulary size: 151936
+Hidden dimension: 1536
+Model size in memory: 2.9 GB
+
+============================================================
+COMPARING TRANSLATION METHODS
+============================================================
+
+Prompt: 'The capital of France is'
+----------------------------------------
+
+Method: instruction
+  Translation: ''
+  Avg entropy: nan
+  Avg distance: 0.28
+
+Method: completion
+  Translation: ' 正确 A.
+答案:
+A
+
+在Word的编辑状态，设置了标尺，则'
+
+Method: nearest
+  Translation: ' Paris .'
+
+============================================================
+TESTING ALL PROMPTS WITH INSTRUCTION METHOD
+============================================================
+
+Prompt: 'The capital of France is'
+----------------------------------------
+Instruction translation: 
+Nearest tokens:  Paris .
+  Vector 1 top weights: ' Paris' (0.77), ' located' (0.08), ' a' (0.04)
+  Vector 2 top weights: '.' (0.58), ',' (0.36), ' and' (0.03)
+
+Prompt: '2 plus 2 equals'
+----------------------------------------
+Instruction translation: 
+Nearest tokens:   4
+  Vector 1 top weights: ' ' (0.65), ' what' (0.30), '
+' (0.02)
+  Vector 2 top weights: '4' (0.91), '3' (0.03), '1' (0.03)
+
+Prompt: 'Once upon a time'
+----------------------------------------
+Instruction translation: 
+Nearest tokens: ,  there
+  Vector 1 top weights: ',' (0.93), '，' (0.04), ' there' (0.02)
+  Vector 2 top weights: ' there' (0.59), ' a' (0.24), ' in' (0.12)
+
+============================================================
+TESTING DIFFERENT N VALUES
+============================================================
+
+N=2 vectors:
+  Instruction: 
+  Nearest: ,  how
+
+N=3 vectors:
+  Instruction: 
+  Nearest: ,  how  would
+
+N=4 vectors:
+  Instruction: 
+  Nearest: ,  how  would  the
+
+============================================================
+QWEN TEST COMPLETE
+============================================================

@@ -1,0 +1,71 @@
+(venv) (base) scottmcguire@MacBook-Pro src % python baseline.py 
+Using device: mps
+Model loaded: gpt2
+Vocabulary size: 50257
+Hidden dimension: 768
+
+============================================================
+BASELINE GPT-2 GENERATION TEST
+============================================================
+
+Prompt: 'The capital of France is'
+----------------------------------------
+Generated:  a city of 100 million people, and the capital is also home to the biggest cinema in the world (The Dark Knight Rises, which takes place in Paris). The city also has several other famous places of interest, such
+Average entropy: 1.44
+Top tokens (first 3 steps):
+  Step 1: ' the' (0.30), ' now' (0.12), ' a' (0.12)
+  Step 2: ' city' (0.37), ' country' (0.12), ' small' (0.09)
+  Step 3: ' of' (0.76), ' with' (0.08), ' that' (0.07)
+
+Prompt: '2 plus 2 equals'
+----------------------------------------
+Generated:  3.0.
+
+With these two numbers, we have the following formula:
+
+(x + 2) * (1 + 2)
+
+This formula is used to create the number of points in the series.
+Average entropy: 1.45
+Top tokens (first 3 steps):
+  Step 1: ' 1' (0.37), ' 2' (0.25), ' 3' (0.11)
+  Step 2: '.' (0.69), ',' (0.12), ')' (0.03)
+  Step 3: '
+' (0.55), '5' (0.14), ' The' (0.07)
+
+Prompt: 'Once upon a time'
+----------------------------------------
+Generated:  in the past, when there was no such thing as an "emotional connection", the mind had a feeling of self-loathing. It was a self-righteous self-loathing, a self-righteous sense that it
+Average entropy: 1.40
+Top tokens (first 3 steps):
+  Step 1: ',' (0.85), ' the' (0.04), ' I' (0.02)
+  Step 2: ' the' (0.65), ' history' (0.18), ' my' (0.04)
+  Step 3: ' past' (0.68), ' history' (0.10), ' future' (0.04)
+
+Prompt: 'If it's raining, I need an umbrella. It's raining, so'
+----------------------------------------
+Generated:  I need a raincoat." He said.
+
+He was already in the rain.
+
+The first day he was on the scene, there were about three thousand people
+Average entropy: 1.46
+Top tokens (first 3 steps):
+  Step 1: ' I' (0.96), ' why' (0.01), ' it' (0.01)
+  Step 2: ' need' (0.75), ''m' (0.15), ''ll' (0.02)
+  Step 3: ' a' (0.38), ' to' (0.30), ' an' (0.24)
+
+Prompt: 'In a world where gravity worked backwards'
+----------------------------------------
+Generated:  to give space to the planet, a universe of people and planets, what is the most likely way to explain the origin of the universe and why it should be so complicated?
+
+I am a researcher in astronomy
+Average entropy: 1.70
+Top tokens (first 3 steps):
+  Step 1: ',' (0.80), ' and' (0.12), ' in' (0.03)
+  Step 2: ' create' (0.44), ' the' (0.22), ' make' (0.06)
+  Step 3: ' us' (0.46), ' rise' (0.20), ' you' (0.11)
+
+============================================================
+BASELINE TEST COMPLETE
+============================================================

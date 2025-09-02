@@ -1,0 +1,75 @@
+(venv) (base) scottmcguire@MacBook-Pro src % python concept_tokens.py 
+Using device: mps
+Model loaded: gpt2
+Vocabulary size: 50257
+Hidden dimension: 768
+Number of layers: 12
+
+============================================================
+CONCEPT TOKEN GENERATION - TRANSLATION COMPARISON
+============================================================
+
+Prompt: 'The capital of France is'
+----------------------------------------
+
+Translation method: completion
+  Generated 2 concept tokens
+  Translation: ' is one of two meanings for a city (the other being that it has an international name) and'
+  Average entropy: 2.86
+  Average distance from manifold: 0.79
+
+Translation method: instruction
+  Generated 2 concept tokens
+  Translation: ' which that city has been created. 
+The country and territory are divided into two halves: half-and'
+
+Translation method: nearest
+  Generated 2 concept tokens
+  Translation: ' the  capital'
+
+============================================================
+TESTING ALL PROMPTS WITH COMPLETION METHOD
+============================================================
+
+Prompt: 'The capital of France is'
+----------------------------------------
+Completion translation:  one that is the center of North-South, i.e. not in any way northward
+Nearest tokens:  the  capital
+  Vector 1 top weights: ' the' (0.91), ' a' (0.05), ' in' (0.02)
+  Vector 2 top weights: ' capital' (0.55), ' city' (0.20), ' French' (0.07)
+
+Prompt: '2 plus 2 equals'
+----------------------------------------
+Completion translation:  English is the same as it was when we first used, "to be".
+A- 2
+Nearest tokens:  2 .
+  Vector 1 top weights: ' 2' (0.52), ' 1' (0.35), ' 3' (0.05)
+  Vector 2 top weights: '.' (0.75), ',' (0.13), ' plus' (0.04)
+
+Prompt: 'Once upon a time'
+----------------------------------------
+Completion translation:  the property, and for which an insurer is liable". The word in plain English means that if there
+Nearest tokens: ,  the
+  Vector 1 top weights: ',' (0.84), ' when' (0.07), ' of' (0.04)
+  Vector 2 top weights: ' the' (0.74), ' and' (0.05), ' a' (0.05)
+
+============================================================
+TESTING DIFFERENT N VALUES
+============================================================
+
+N=2 vectors:
+  Completion:  confusion in the English language, and I'm not able to explain this completely or make clear that it
+  Nearest: ,  the
+
+N=3 vectors:
+  Completion:  that it is not necessary for any one at all.
+The original English word was in fact
+  Nearest: ,  the  world
+
+N=4 vectors:
+  Completion:  is not in this context. The meaning for both these words must be considered when discussing those
+  Nearest: ,  the  world  of
+
+============================================================
+CONCEPT TOKEN TEST COMPLETE
+============================================================

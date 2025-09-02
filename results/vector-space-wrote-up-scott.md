@@ -52,15 +52,3 @@ We switched to Qwen2.5-1.5B and attempted to go back to instruction mode. We cou
 Words did come out! Though not always in English and not in meaningful responses. However, things became clearer when looking at the nearest tokens to the generated vectors. It became apparent that they did not correspond to a single answer, just in a generalized language. They were superpositions of truly different potential responses. For instance, "The capital of France is" -> ("Paris", "located", "a") which you could imagine being completed as "The capital of France is Paris", "The capital of France is located on a river.", and "The capital of France is a popular vacation destination.".
 
 This does lend weight to the ideas in "Training Large Language Models to Reason in a Continuous Latent Space" in which this can be used to explore multiple approaches in CoT at once. 
-
-## Existing Research
-
-### Training Large Language Models to Reason in a Continuous Latent Space
-https://arxiv.org/abs/2412.06769
-
-### Continuous Chain of Thought Enables Parallel Exploration and Reasoning
-https://arxiv.org/abs/2505.23648
-
-### Soft Thinking: Unlocking the Reasoning Potential of LLMs in Continuous Concept Space
-https://arxiv.org/abs/2505.15778v1
-
