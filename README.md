@@ -2,7 +2,11 @@
 
 ## Conjecture
 
-While studying LLM architecture and having been exposed to examples like the King - Man + Woman = Queen example using embedding vectors, I wondered if models would understand vectors that didn't correspond to words/tokens in the target language. (And I expect many people have as well.) In particular, I wondered if existing models _already_ understood and used such an expanded language internally, expecially in middle layers, but might be hobbled by being forced to choose a target language token at the end of each pass. In the examople, if we imagined that English didn't have the word "Queen", it would make sense for it to be one, and it might be that models would work as-if it was one. At least until some final translation step to produce output the user could understand. I decided I could test this.
+While studying LLM architecture, and having been exposed to examples like King - Man + Woman = Queen using embedding vectors, I wondered if models would understand vectors that didn't correspond to words/tokens in the target language. (I expected many people had wondered the same thing.) In particular, I wondered if existing models _already_ understood and used such an expanded language internally, but were hobbled by being forced to choose a target language token at the end of each pass. If we imagine that English didn't have the word "Queen", it would make some statements awkward and potentially make some reasoning less efficient. It seems plausible that models might therefore learn to use the resulting vector, internally, as-if there were a corresponding word. At least until some final translation step to produce output the user could understand. I decided I could test this.
+
+## Results Summary
+Knowing what I do now, this could have been seen by _just_ adding some logging of the distribution of next tokens before generating them but otherwise letting the model run as normal.
+That would have showed that the vectors were superpositions of truly different potential responses. For instance, "The capital of France is" -> ("Paris", "located", "a") which you could imagine being completed as "The capital of France is Paris", "The capital of France is located on a river.", and "The capital of France is a popular vacation destination.". This is different than what I'd expect to see if the vectors represented one answer, but using an expanded language.
 
 ## Test
 
@@ -27,7 +31,7 @@ The larger problem was that the vectors would have positions from the writer enc
 
 I also decided to include an idea of limiting the number of vectors produced before forcing a translation to the target language and then continuuing generation in the writer. This would lead to an interleaving of next vector chunk generation and chunk translation. This would be another mechanism to keep the process from wandering out of the well-supported part of the space.
 
-This led to
+This led to ...
 
 ### Plan 2
 
@@ -58,6 +62,13 @@ A few other things were considered and/or implemented but didn't end up being ve
 
 While my conjecture was that this could be done without any special model training, I did discuss with Claude how to try to train a model so that this would work if we had negative results. The idea here was to train a model the usual way, both pre and post, then to use RL with the model generating a max of two vectors at a time before translation, then three at a time, ... 
 
+Might the results have been different with raw vectors, stripped of position information, rather than concept vectors?
+
+Maybe something like an expanded, vector language applies for some intermediate layers, but not in final layers as they are specialized (in the base model) for reproducing the distribution of next tokes which _must_ accomodate _different_ future paths?
+
+With _enough_ post training to produce a model that will give "the" response rather than produce a sample of possible responses might this expanded language come about?
+Could this be an emergent capability that won't show up with the small models I was able to use?
+
 ## Existing Research
 
 ### Training Large Language Models to Reason in a Continuous Latent Space
@@ -68,8 +79,4 @@ https://arxiv.org/abs/2505.23648
 
 ### Soft Thinking: Unlocking the Reasoning Potential of LLMs in Continuous Concept Space
 https://arxiv.org/abs/2505.15778v1
-
-## Conclusion
-
-Knowing what I do now, this could have been seen by _just_ adding some logging of the distribution of next tokens before generating them but otherwise letting the model run as normal.
 
