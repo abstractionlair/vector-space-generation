@@ -53,6 +53,9 @@ Words did come out! Though not always in English and not in meaningful responses
 
 This does lend weight to the ideas in "Training Large Language Models to Reason in a Continuous Latent Space" in which this can be used to explore multiple approaches in CoT at once. 
 
+## Loose Ends
+A few other things were considered and/or implemented but didn't end up being very relevant since the conclusion was apparent from just the first couple of vectors. GPT-5 Pro pointed out that we'd need some new mechanism for deciding when to stop generating vectors since our implementation would break the mechanism based on a stop-token and it suggested monitoring entropy. (This was not an original idea, it is in the reseasrch GPT-5 Pro pointed to.) We did this and in the GPT-2-based tests it needed some tuning to avoid going on too long. The approach also worked for the Qwen implementation. The interleaved generation of chunks and translation of chunks didn't matter for similar reasons.  
+
 ## Existing Research
 
 ### Training Large Language Models to Reason in a Continuous Latent Space
