@@ -8,6 +8,8 @@ While studying LLM architecture, and having been exposed to examples like King -
 Knowing what I do now, this could have been seen by _just_ adding some logging of the distribution of next tokens before generating them but otherwise letting the model run as normal.
 That would have showed that the vectors were superpositions of truly different potential responses. For instance, "The capital of France is" -> ("Paris", "located", "a") which you could imagine being completed as "The capital of France is Paris", "The capital of France is located on a river.", and "The capital of France is a popular vacation destination.". This is different than what I'd expect to see if the vectors represented one answer, but using an expanded language.
 
+That's the tentative conclusion. But I don't know how to reconcile that with what I have heard about the results of research like that in "On the biology of a large language model" where things seemed fairly definite.
+
 ## Test
 
 ### Plan 1
