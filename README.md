@@ -49,7 +49,7 @@ And then to implement a reader mode with the following changes.
 We would then send a query to the writer model, collect the output as a sequence of vectors, and then call the reader model with a message like Embedded("Please translate the following into English: ") + (Sequence of Vectors).
 
 #### Implementation 1
-The initial implementation used GPT-2. This ran into two problems. First, I hand't considered a comoletion model rather than an instruction model. We changed the translation step to "The meaning of (Sequence of Vectors) in plain English is ". But then we ran into the second problem. Even without our weird vectors, we couldn't get GPT-2 do translations like this, even for Spanish to English.
+The initial implementation used GPT-2. This ran into two problems. First, I hand't considered a completion model rather than an instruction model. We changed the translation step to "The meaning of (Sequence of Vectors) in plain English is ". But then we ran into the second problem. Even without our weird vectors, we couldn't get GPT-2 do translations like this, even for Spanish to English.
 
 #### Implementation 2
 We switched to Qwen2.5-1.5B and attempted to go back to instruction mode. We could not get this to work, we believe because in this mode the model needed to see "<|im_start|>" and "<|im_end|>" explicitly as _tokens_. Trying to put the equivalent in the sequence of vectors didn't work. So we fell back to using completion mode. Good news here was that the Spanish to English translation done in completion style did work with this model. With this implementation we did get results.
