@@ -84,3 +84,7 @@ https://arxiv.org/abs/2505.23648
 ### Soft Thinking: Unlocking the Reasoning Potential of LLMs in Continuous Concept Space
 https://arxiv.org/abs/2505.15778v1
 
+## Provenance
+
+The direction was mine — the conjecture, the model choices (GPT-2, then Qwen), and the interpretation of what came out. The method was not: what we ran is an instantiation of the published Soft Thinking concept-token approach cited above, adopted on GPT-5 Pro's pointer rather than invented here. The code was written in Claude Code, and I had Codex review it rather than reading it line by line myself — the caveat section above is a fair scorecard for how that worked out. The raw outputs are published in this repo, including the confusing ones; that, more than the review, is what keeps the process honest.
+
