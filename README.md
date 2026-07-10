@@ -6,7 +6,7 @@ While studying LLM architecture, and having been exposed to examples like King -
 
 ## Results Summary
 Knowing what I do now, this could have been seen by _just_ adding some logging of the distribution of next tokens before generating them but otherwise letting the model run as normal.
-That would have showed that the vectors were superpositions of truly different potential responses. For instance, "The capital of France is" -> ("Paris", "located", "a") which you could imagine being completed as "The capital of France is Paris", "The capital of France is located on a river.", and "The capital of France is a popular vacation destination.". This is different than what I'd expect to see if the vectors represented one answer, but using an expanded language.
+That would have shown that the vectors were superpositions of truly different potential responses. For instance, "The capital of France is" -> ("Paris", "located", "a") which you could imagine being completed as "The capital of France is Paris", "The capital of France is located on a river.", and "The capital of France is a popular vacation destination.". This is different than what I'd expect to see if the vectors represented one answer, but using an expanded language.
 
 That's the tentative conclusion. But I don't know how to reconcile that with what I have heard about the results of research like that in "On the biology of a large language model" where things seemed fairly definite.
 
@@ -15,11 +15,11 @@ That's the tentative conclusion. But I don't know how to reconcile that with wha
 ### Plan 1
 
 I planned to take a small model and modify it so that we would have a writer mode with the following changes.
-1. We could take over the embeding step and feed the model sequences of vectors.
+1. We could take over the embedding step and feed the model sequences of vectors.
 2. We could take the raw hidden vector from just before choosing a next token and make that the next vector.
 
 And then to implement a reader mode with the following changes.
-1. As above, we could take over the embeding step and feed the model sequences of vectors.
+1. As above, we could take over the embedding step and feed the model sequences of vectors.
 2. It _would_ be forced to pick a next token at each step as usual, no raw vectors.
 We would then send a query to the writer model, collect the output as a sequence of vectors, and then call the reader model with a message like Embedded("Please translate the following into English: ") + (Sequence of Vectors).
 
@@ -27,29 +27,29 @@ We would then send a query to the writer model, collect the output as a sequence
 
 I ran this by several models and got the most constructive feedback from GPT-5 Pro.
 
-A lesser problem was that it predicted that while this might work a bit at first, but as the vector output sequence grew it expected it to get so far from the distribution seen in training and for output to become garbage. I call this the lesser problem because that would still be output and a result, even if a negative one.
+A lesser problem was that it predicted that while this might work a bit at first, as the vector output sequence grew it expected the vectors to get so far from the distribution seen in training that the output would become garbage. I call this the lesser problem because that would still be output and a result, even if a negative one.
 
-The larger problem was that the vectors would have positions from the writer encoded in them which could mess with the reader's attention mechanism. It also pointed to some existing research, which I will cite later. (I should have done a literature search earlier. I am a bit surprised other models hadn't brought this up.) There were a couple of ways to go here. One was based on "Soft Thinking: Unlocking the Reasoning Potential of LLMs in Continuous Concept Space" which includes the idea of concept tokens. By superimposing the embeddings for the next tokens the model would have chose from to create the next vector ourselves, we naturally strip away things like the position endcodings _and_ we force ourselves to stay in the area of the space populated by token embeddings, while still allowing us to stray from the target language. There were other options, but I wanted to choose one manageable thing and try it so I went with this.
+The larger problem was that the vectors would have positions from the writer encoded in them which could mess with the reader's attention mechanism. It also pointed to some existing research, which I will cite later. (I should have done a literature search earlier. I am a bit surprised other models hadn't brought this up.) There were a couple of ways to go here. One was based on "Soft Thinking: Unlocking the Reasoning Potential of LLMs in Continuous Concept Space" which includes the idea of concept tokens. By superimposing the embeddings for the next tokens the model would have chosen from to create the next vector ourselves, we naturally strip away things like the position encodings _and_ we force ourselves to stay in the area of the space populated by token embeddings, while still allowing us to stray from the target language. There were other options, but I wanted to choose one manageable thing and try it so I went with this.
 
-I also decided to include an idea of limiting the number of vectors produced before forcing a translation to the target language and then continuuing generation in the writer. This would lead to an interleaving of next vector chunk generation and chunk translation. This would be another mechanism to keep the process from wandering out of the well-supported part of the space.
+I also decided to include an idea of limiting the number of vectors produced before forcing a translation to the target language and then continuing generation in the writer. This would lead to an interleaving of next vector chunk generation and chunk translation. This would be another mechanism to keep the process from wandering out of the well-supported part of the space.
 
 This led to ...
 
 ### Plan 2
 
 We would have a writer mode with the following changes.
-1. We could take over the embeding step and feed the model sequences of vectors.
+1. We could take over the embedding step and feed the model sequences of vectors.
 2. We could take the raw hidden vector from just before choosing a next token.
 3. We would proceed to generating the next-token probability distribution, and create a next vector as a probability-weighted sum of the embeddings of the next tokens. (This is an average, but it doesn't feel like an average. I may just need time to let it sink in.) And this would be the next vector
 4. If we hit the limit on the number of vectors produced, trigger a call to the reader to translate the pending vectors and then replace them in our (vector) context with the embeddings.
 
 And then to implement a reader mode with the following changes. 
-1. As above, we could take over the embeding step and feed the model sequences of vectors.
+1. As above, we could take over the embedding step and feed the model sequences of vectors.
 2. It _would_ be forced to pick a next token at each step as usual, no raw vectors.
 We would then send a query to the writer model, collect the output as a sequence of vectors, and then call the reader model with a message like Embedded("Please translate the following into English: ") + (Sequence of Vectors).
 
 #### Implementation 1
-The initial implementation used GPT-2. This ran into two problems. First, I hand't considered a completion model rather than an instruction model. We changed the translation step to "The meaning of (Sequence of Vectors) in plain English is ". But then we ran into the second problem. Even without our weird vectors, we couldn't get GPT-2 do translations like this, even for Spanish to English. So it seems GPT-2 just isn't powerful enough for this testing.
+The initial implementation used GPT-2. This ran into two problems. First, I hadn't considered a completion model rather than an instruction model. We changed the translation step to "The meaning of (Sequence of Vectors) in plain English is ". But then we ran into the second problem. Even without our weird vectors, we couldn't get GPT-2 to do translations like this, even for Spanish to English. So it seems GPT-2 just isn't powerful enough for this testing.
 
 **Caveat (found later, in review):** the GPT-2 code adds position embeddings twice. In `src/concept_tokens.py` I take the model's position embeddings (`self.model.transformer.wpe`) and add them to the input vectors by hand before calling `transformer(inputs_embeds=...)`, but `GPT2Model.forward` unconditionally adds its own position embeddings to whatever `inputs_embeds` it receives — the `inputs_embeds` path does not bypass `wpe`. So every vector fed through GPT-2 here gets positional information summed in twice, which corrupts the vectors under study. The "GPT-2 isn't powerful enough" reading above is therefore confounded by that bug and would need a fix-and-rerun to state cleanly. For GPT-2 specifically it's over-determined that the model was too weak here regardless — it couldn't do a plain Spanish-to-English translation in this setup either. A later execution-verification pass (July 2026) found the Qwen arm is not clean either, in different ways: the generation-based translation paths slice `generate()`'s output as if it returned prompt-plus-new-tokens, but when only `inputs_embeds` is passed it returns new tokens only — so the code discards the first `seq_len` *generated* tokens, which is why several saved translations come back empty. Separately, the float16 probability clamp underflows to zero (the NaN entropies visible in the saved output), and the entropy early-stop is inactive under default settings. Net: the generation-based translation results in *both* arms are bug-confounded; the nearest-token decoding results (e.g. " Paris .") are the ones that stand. The exploration and its negative results remain what they were — an exploration, published with its raw outputs — but none of it should be read as a claim about model capability. The Results Summary's superposition argument is separate: it depends only on the next-token distribution of an unmodified model, and stands independently of these runs.
 
@@ -62,13 +62,13 @@ Words did come out! Though not always in English and not in meaningful responses
 This does lend weight to the ideas in "Training Large Language Models to Reason in a Continuous Latent Space" in which this can be used to explore multiple approaches in CoT at once. 
 
 ## Loose Ends
-A few other things were considered and/or implemented but didn't end up being very relevant since the conclusion was apparent from just the first couple of vectors. GPT-5 Pro pointed out that we'd need some new mechanism for deciding when to stop generating vectors since our implementation would break the mechanism based on a stop-token and it suggested monitoring entropy. (This was not an original idea, it is in the reseasrch GPT-5 Pro pointed to.) We did this and in the GPT-2-based tests it needed some tuning to avoid going on too long. The approach also worked for the Qwen implementation. The interleaved generation of chunks and translation of chunks didn't matter for similar reasons.
+A few other things were considered and/or implemented but didn't end up being very relevant since the conclusion was apparent from just the first couple of vectors. GPT-5 Pro pointed out that we'd need some new mechanism for deciding when to stop generating vectors since our implementation would break the mechanism based on a stop-token and it suggested monitoring entropy. (This was not an original idea, it is in the research GPT-5 Pro pointed to.) We did this and in the GPT-2-based tests it needed some tuning to avoid going on too long. The approach also worked for the Qwen implementation. The interleaved generation of chunks and translation of chunks didn't matter for similar reasons.
 
 While my conjecture was that this could be done without any special model training, I did discuss with Claude how to try to train a model so that this would work if we had negative results. The idea here was to train a model the usual way, both pre and post, then to use RL with the model generating a max of two vectors at a time before translation, then three at a time, ... 
 
 Might the results have been different with raw vectors, stripped of position information, rather than concept vectors?
 
-Maybe something like an expanded, vector language applies for some intermediate layers, but not in final layers as they are specialized (in the base model) for reproducing the distribution of next tokes which _must_ accomodate _different_ future paths?
+Maybe something like an expanded, vector language applies for some intermediate layers, but not in final layers as they are specialized (in the base model) for reproducing the distribution of next tokens which _must_ accommodate _different_ future paths?
 
 With _enough_ post training to produce a model that will give "the" response rather than produce a sample of possible responses might this expanded language come about?
 Could this be an emergent capability that won't show up with the small models I was able to use?
